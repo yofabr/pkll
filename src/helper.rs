@@ -8,6 +8,15 @@ const CYAN: &str = "\x1b[36m";
 const BOLD: &str = "\x1b[1m";
 const RESET: &str = "\x1b[0m";
 
+pub fn handle(os: &str, port: u16) {
+     match os {
+        "windows" => handler_for_windows(port),
+        "macos" => handler_for_unix(port),
+        "linux" => handler_for_unix(port),
+        _ => println!("Unable to detect current OS")
+    }
+}
+
 fn get_process_info(pid: &str) -> (String, String, String) {
     let ps_output = Command::new("ps")
         .args(["-p", pid, "-o", "comm=,etime=,user="])

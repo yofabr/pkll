@@ -13,13 +13,6 @@ fn main() {
     let port = args.port;
     let os = env::consts::OS; 
 
-    match os {
-        "windows" => helper::handler_for_windows(port),
-        "macos" => helper::handler_for_unix(port),
-        "linux" => helper::handler_for_unix(port),
-        _ => {
-
-        }
-    }
+    helper::handle(os, port);
     
 }

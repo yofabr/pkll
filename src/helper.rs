@@ -3,17 +3,16 @@ use std::process::Command;
 const RED: &str = "\x1b[31m";
 const GREEN: &str = "\x1b[32m";
 const YELLOW: &str = "\x1b[33m";
-const BLUE: &str = "\x1b[34m";
 const CYAN: &str = "\x1b[36m";
 const BOLD: &str = "\x1b[1m";
 const RESET: &str = "\x1b[0m";
 
 pub fn handle(os: &str, port: u16) {
-     match os {
+    match os {
         "windows" => handler_for_windows(port),
         "macos" => handler_for_unix(port),
         "linux" => handler_for_unix(port),
-        _ => println!("Unable to detect current OS")
+        _ => println!("Unable to detect current OS"),
     }
 }
 
@@ -127,7 +126,6 @@ pub fn handler_for_unix(port: u16) {
 
     if answer.trim().to_lowercase() == "y" {
         for pid in &pids {
-            // println!("{}🔪 Killing PID {}{} on port {}", RED, BOLD, pid, port);
             Command::new("kill").args(["-9", pid]).status().ok();
         }
         println!("{}Done! Port {} is now free.{}", GREEN, port, RESET);
@@ -137,5 +135,134 @@ pub fn handler_for_unix(port: u16) {
 }
 
 pub fn handler_for_windows(port: u16) {
-    println!("{}Port: {}{}", BLUE, port, RESET);
+    use listeners::Listener;
+
+    let all_listeners = match listeners::get_all() {
+        Ok(l) => l,
+        Err(_) => {
+            println!("{}Failed to get listeners{}", RED, RESET);
+            return;
+        }
+    };
+
+    let matching: Vec<&Listener> = all_listeners
+        .iter()
+        .filter(|l| l.socket.port() == port)
+        .collect();
+
+    if matching.is_empty() {
+        println!("{}No process found on port {}{}", YELLOW, port, RESET);
+        return;
+    }
+
+    println!("\n{}Port {} Details:{}", BOLD, port, RESET);
+    println!("{}", "=".repeat(40));
+
+    let mut pids: Vec<u32> = Vec::new();
+
+    for listener in &matching {
+        let process = &listener.process;
+        let pid = process.pid;
+        let process_name = &process.name;
+
+        let (username, uptime, cmd_line) = get_process_info_sysinfo(pid);
+
+        let local_addr = listener.socket.to_string();
+        let protocol = listener.protocol;
+
+        println!("\n{}┌─ {}Process{} {}", CYAN, BOLD, RESET, process_name);
+        println!("{}│  PID:        {}{}", GREEN, RESET, pid);
+        println!("{}│  User:       {}{}", GREEN, RESET, username);
+        println!("{}│  Uptime:     {}{}", GREEN, RESET, uptime);
+        println!("{}│  Type:       {}{}", GREEN, RESET, protocol);
+        println!("{}│  FD:         {}{}", GREEN, RESET, "socket");
+        println!("{}│  Address:    {}{}", GREEN, RESET, local_addr);
+        println!("{}│  Command:   {}{}", GREEN, RESET, cmd_line);
+        println!("{}└{}", CYAN, RESET);
+
+        if !pids.contains(&pid) {
+            pids.push(pid);
+        }
+    }
+
+    if pids.is_empty() {
+        return;
+    }
+
+    println!(
+        "\n{}⚠ Found {} process(es) on port {}{}",
+        YELLOW,
+        pids.len(),
+        port,
+        RESET
+    );
+    print!("{}Kill these processes? (y/N): {}", RED, RESET);
+
+    std::io::Write::flush(&mut std::io::stdout()).ok();
+
+    let mut answer = String::new();
+    std::io::stdin().read_line(&mut answer).ok();
+
+    if answer.trim().to_lowercase() == "y" {
+        for &pid in &pids {
+            kill_process_sysinfo(pid);
+        }
+        println!("{}Done! Port {} is now free.{}", GREEN, port, RESET);
+    } else {
+        println!("{}Cancelled.{}", RESET, RESET);
+    }
+}
+
+fn get_process_info_sysinfo(pid: u32) -> (String, String, String) {
+    use sysinfo::System;
+
+    let mut sys = System::new();
+    sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
+
+    if let Some(proc) = sys.process(sysinfo::Pid::from_u32(pid)) {
+        let cmd: String = proc
+            .cmd()
+            .iter()
+            .map(|s| s.to_string_lossy())
+            .collect::<Vec<_>>()
+            .join(" ");
+        let start_time = proc.start_time();
+        let now = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_secs())
+            .unwrap_or(0);
+        let uptime_secs = now.saturating_sub(start_time);
+        let uptime = format_uptime(uptime_secs);
+
+        (String::from("N/A"), uptime, cmd)
+    } else {
+        (String::from("N/A"), String::from("N/A"), String::new())
+    }
+}
+
+fn kill_process_sysinfo(pid: u32) {
+    use sysinfo::System;
+
+    let mut sys = System::new();
+    sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
+
+    if let Some(proc) = sys.process(sysinfo::Pid::from_u32(pid)) {
+        proc.kill();
+    }
+}
+
+fn format_uptime(seconds: u64) -> String {
+    let days = seconds / 86400;
+    let hours = (seconds % 86400) / 3600;
+    let mins = (seconds % 3600) / 60;
+
+    if days > 0 {
+        format!("{}d {}h {}m", days, hours, mins)
+    } else if hours > 0 {
+        format!("{}h {}m", hours, mins)
+    } else if mins > 0 {
+        format!("{}m", mins)
+    } else {
+        format!("{}s", seconds)
+    }
 }

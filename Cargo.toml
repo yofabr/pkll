@@ -3,6 +3,13 @@ name = "pkll"
 version = "0.1.0"
 edition = "2024"
 repository = "https://github.com/yofabr/pkll"
+description = "A short description of your tool"
+license = "MIT"
+homepage = "https://github.com/yofabr/pkll"
+readme = "README.md"
+keywords = ["port", "process", "cli"]
+categories = ["command-line-utilities"]
+
 
 [dependencies]
 clap = { version = "4.6.0", features = ["derive"] }
@@ -14,3 +21,7 @@ sysinfo = "0.32"
 [profile.dist]
 inherits = "release"
 lto = "thin"
+
+[[bin]]
+name = "pkll"
+path = "src/main.rs"

@@ -2,12 +2,13 @@
 name = "pkll"
 version = "0.1.0"
 edition = "2024"
+authors = ["Yoftahe <jofab08@gmail.com>"]
 repository = "https://github.com/yofabr/pkll"
-description = "A short description of your tool"
+description = "A CLI tool to find and kill processes running on a specific port"
 license = "MIT"
 homepage = "https://github.com/yofabr/pkll"
 readme = "README.md"
-keywords = ["port", "process", "cli"]
+keywords = ["port", "process", "cli", "kill", "network"]
 categories = ["command-line-utilities"]
 
 

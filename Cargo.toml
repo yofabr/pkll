@@ -1,6 +1,6 @@
 [package]
 name = "pkll"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2024"
 authors = ["Yoftahe <jofab08@gmail.com>"]
 repository = "https://github.com/yofabr/pkll"
@@ -14,7 +14,7 @@ categories = ["command-line-utilities"]
 
 [dependencies]
 clap = { version = "4.6.0", features = ["derive"] }
-dist = "0.0.0"
+cargo-dist = "0.31.0"
 listeners = "0.5"
 sysinfo = "0.32"
 

@@ -220,12 +220,17 @@ fn get_process_info_sysinfo(pid: u32) -> (String, String, String) {
     sys.refresh_processes(sysinfo::ProcessesToUpdate::All, true);
 
     if let Some(proc) = sys.process(sysinfo::Pid::from_u32(pid)) {
-        let cmd: String = proc
+        let mut cmd: String = proc
             .cmd()
             .iter()
             .map(|s| s.to_string_lossy())
             .collect::<Vec<_>>()
             .join(" ");
+
+        if cmd.is_empty() {
+            cmd = get_command_line_windows(pid);
+        }
+
         let start_time = proc.start_time();
         let now = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
@@ -237,6 +242,29 @@ fn get_process_info_sysinfo(pid: u32) -> (String, String, String) {
         (String::from("N/A"), uptime, cmd)
     } else {
         (String::from("N/A"), String::from("N/A"), String::new())
+    }
+}
+
+fn get_command_line_windows(pid: u32) -> String {
+    let output = Command::new("wmic")
+        .args([
+            "process",
+            "where",
+            &format!("ProcessId={}", pid),
+            "get",
+            "CommandLine",
+            "/value",
+        ])
+        .output();
+
+    if let Ok(output) = output {
+        let s = String::from_utf8_lossy(&output.stdout);
+        s.lines()
+            .find(|l| l.starts_with("CommandLine="))
+            .map(|l| l.trim_start_matches("CommandLine=").to_string())
+            .unwrap_or_default()
+    } else {
+        String::new()
     }
 }
 

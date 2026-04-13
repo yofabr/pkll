@@ -33,7 +33,7 @@ Expand-Archive -Path "$TmpDir\$Filename" -DestinationPath $TmpDir -Force
 # Install to ~/.local/bin (no admin needed)
 $InstallDir = "$env:USERPROFILE\.local\bin"
 New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
-Move-Item -Force "$TmpDir\$Bin.exe" "$InstallDir\$Bin.exe"
+Move-Item -Force "$TmpDir\$Bin-$Target\$Bin.exe" "$InstallDir\$Bin.exe"
 
 # Add to user PATH if missing
 $CurrentPath = [Environment]::GetEnvironmentVariable("PATH", "User")

@@ -52,7 +52,7 @@ echo "  Target  : $TARGET"
 echo ""
 
 echo "Downloading $FILENAME..."
-curl -fsSL --progress-bar "$URL" | tar -xJ
+curl -fsSL --progress-bar "$URL" | tar -xJ --strip-components=1 "pkll-${TARGET}/pkll"
 
 chmod +x "$BIN"
 

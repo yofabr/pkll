@@ -2,8 +2,15 @@
 name = "pkll"
 version = "0.1.0"
 edition = "2024"
+repository = "https://github.com/yofabr/pkll"
 
 [dependencies]
 clap = { version = "4.6.0", features = ["derive"] }
+dist = "0.0.0"
 listeners = "0.5"
 sysinfo = "0.32"
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"

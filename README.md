@@ -99,7 +99,6 @@ pkll <port>
 ```sh
 pkll 3000    # Kill whatever is running on port 3000
 pkll 8080    # Kill whatever is running on port 8080
-pkll 5432    # Free up your Postgres port
 ```
 
 ---

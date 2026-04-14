@@ -35,6 +35,14 @@ $ pkll 3000
 
 ---
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/screenshot.png" alt="pkll in action" width="700" />
+</p>
+
+---
+
 ## Features
 
 - **Safe by default** — Shows process details and prompts for confirmation before killing

@@ -23,7 +23,7 @@ fn get_process_info(pid: &str) -> (String, String, String) {
 
     if let Ok(output) = ps_output {
         let output_str = String::from_utf8_lossy(&output.stdout);
-        let parts: Vec<&str> = output_str.trim().split_whitespace().collect();
+        let parts: Vec<&str> = output_str.split_whitespace().collect();
         if parts.len() >= 3 {
             return (
                 parts[0].to_string(),
@@ -175,7 +175,7 @@ pub fn handler_for_windows(port: u16) {
         println!("{}│  User:       {}{}", GREEN, RESET, username);
         println!("{}│  Uptime:     {}{}", GREEN, RESET, uptime);
         println!("{}│  Type:       {}{}", GREEN, RESET, protocol);
-        println!("{}│  FD:         {}{}", GREEN, RESET, "socket");
+        println!("{}│  FD:         {}socket", GREEN, RESET);
         println!("{}│  Address:    {}{}", GREEN, RESET, local_addr);
         println!("{}│  Command:   {}{}", GREEN, RESET, cmd_line);
         println!("{}└{}", CYAN, RESET);

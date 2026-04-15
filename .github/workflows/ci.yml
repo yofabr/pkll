@@ -1,0 +1,20 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-action@stable
+      - name: Type check
+        run: cargo check
+      - name: Clippy lint
+        run: cargo clippy -- -D warnings
+      - name: Format check
+        run: cargo fmt --check

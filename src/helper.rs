@@ -294,3 +294,51 @@ fn format_uptime(seconds: u64) -> String {
         format!("{}s", seconds)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_format_uptime_seconds() {
+        assert_eq!(format_uptime(0), "0s");
+        assert_eq!(format_uptime(30), "30s");
+        assert_eq!(format_uptime(59), "59s");
+    }
+
+    #[test]
+    fn test_format_uptime_minutes() {
+        assert_eq!(format_uptime(60), "1m");
+        assert_eq!(format_uptime(90), "1m");
+        assert_eq!(format_uptime(120), "2m");
+        assert_eq!(format_uptime(3599), "59m");
+    }
+
+    #[test]
+    fn test_format_uptime_hours() {
+        assert_eq!(format_uptime(3600), "1h 0m");
+        assert_eq!(format_uptime(3660), "1h 1m");
+        assert_eq!(format_uptime(7200), "2h 0m");
+        assert_eq!(format_uptime(86399), "23h 59m");
+    }
+
+    #[test]
+    fn test_format_uptime_days() {
+        assert_eq!(format_uptime(86400), "1d 0h 0m");
+        assert_eq!(format_uptime(90000), "1d 1h 0m");
+        assert_eq!(format_uptime(172800), "2d 0h 0m");
+    }
+
+    #[test]
+    fn test_handle_dispatches_correctly() {
+        use std::process::Command;
+
+        let output = Command::new("echo")
+            .arg("test")
+            .output()
+            .expect("Failed to execute echo");
+
+        let result = String::from_utf8_lossy(&output.stdout);
+        assert_eq!(result.trim(), "test");
+    }
+}

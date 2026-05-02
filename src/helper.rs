@@ -107,8 +107,16 @@ pub fn handler_for_unix(port: u16, os: &str) {
                     pid,
                     process_name,
                     user,
-                    uptime: if uptime.is_empty() { "N/A".to_string() } else { uptime },
-                    cmd_line: if cmd_line.is_empty() { "N/A".to_string() } else { cmd_line },
+                    uptime: if uptime.is_empty() {
+                        "N/A".to_string()
+                    } else {
+                        uptime
+                    },
+                    cmd_line: if cmd_line.is_empty() {
+                        "N/A".to_string()
+                    } else {
+                        cmd_line
+                    },
                     fd,
                     ty,
                     name,
@@ -122,7 +130,10 @@ pub fn handler_for_unix(port: u16, os: &str) {
                 if os == "linux" {
                     handle_with_ss(port);
                 } else {
-                    eprintln!("{}lsof is not installed. macOS requires lsof to be available.{}", RED, RESET);
+                    eprintln!(
+                        "{}lsof is not installed. macOS requires lsof to be available.{}",
+                        RED, RESET
+                    );
                 }
             } else {
                 eprintln!("{}Failed to run lsof: {}{}", RED, e, RESET);
@@ -173,10 +184,26 @@ fn handle_with_ss(port: u16) {
         let cmd_line = get_command_line(&pid);
         process_entries.push(ProcessEntry {
             pid: pid.clone(),
-            process_name: if process_name.is_empty() { "N/A".to_string() } else { process_name },
-            user: if user.is_empty() { "N/A".to_string() } else { user },
-            uptime: if uptime.is_empty() { "N/A".to_string() } else { uptime },
-            cmd_line: if cmd_line.is_empty() { "N/A".to_string() } else { cmd_line },
+            process_name: if process_name.is_empty() {
+                "N/A".to_string()
+            } else {
+                process_name
+            },
+            user: if user.is_empty() {
+                "N/A".to_string()
+            } else {
+                user
+            },
+            uptime: if uptime.is_empty() {
+                "N/A".to_string()
+            } else {
+                uptime
+            },
+            cmd_line: if cmd_line.is_empty() {
+                "N/A".to_string()
+            } else {
+                cmd_line
+            },
             fd: "N/A".to_string(),
             ty: "socket".to_string(),
             name: format!("port {}", port),
@@ -198,7 +225,10 @@ fn process_and_display(process_entries: Vec<ProcessEntry>, port: u16) {
     let mut pids = Vec::new();
 
     for entry in &process_entries {
-        println!("\n{}┌─ {}Process{} {}", CYAN, BOLD, RESET, entry.process_name);
+        println!(
+            "\n{}┌─ {}Process{} {}",
+            CYAN, BOLD, RESET, entry.process_name
+        );
         println!("{}│  PID:        {}{}", GREEN, RESET, entry.pid);
         println!("{}│  User:       {}{}", GREEN, RESET, entry.user);
         println!("{}│  Uptime:     {}{}", GREEN, RESET, entry.uptime);

@@ -121,14 +121,11 @@ pub fn handler_for_unix(port: u16, os: &str) {
             if e.kind() == std::io::ErrorKind::NotFound {
                 if os == "linux" {
                     handle_with_ss(port);
-                    return;
                 } else {
                     eprintln!("{}lsof is not installed. macOS requires lsof to be available.{}", RED, RESET);
-                    return;
                 }
             } else {
                 eprintln!("{}Failed to run lsof: {}{}", RED, e, RESET);
-                return;
             }
         }
     }

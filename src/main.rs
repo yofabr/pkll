@@ -1,7 +1,13 @@
 use clap::Parser;
-use std::env;
+
+#[cfg(target_os = "windows")]
+mod windows;
+
+#[cfg(any(target_os = "linux", target_os = "macos"))]
+mod unix;
 
 mod helper;
+mod platform;
 
 #[derive(Parser, Debug)]
 #[clap(version)]
@@ -12,7 +18,6 @@ struct Args {
 fn main() {
     let args = Args::parse();
     let port = args.port;
-    let os = env::consts::OS;
 
-    helper::handle(os, port);
+    platform::handle(port);
 }

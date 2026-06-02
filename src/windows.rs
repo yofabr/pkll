@@ -1,7 +1,7 @@
 use listeners::Listener;
 use sysinfo::{Pid, ProcessesToUpdate, System};
 
-use crate::helper::{process_and_display, format_uptime, ProcessEntry, RED, YELLOW, RESET};
+use crate::helper::{ProcessEntry, RED, RESET, YELLOW, format_uptime, process_and_display};
 
 pub fn handle(port: u16) {
     let all_listeners = match listeners::get_all() {
@@ -97,11 +97,7 @@ fn kill_process_sysinfo(pid: u32) {
 }
 
 fn prompt_and_kill(pids: &[u32], port: u16) {
-    println!(
-        "\nFound {} process(es) on port {}",
-        pids.len(),
-        port
-    );
+    println!("\nFound {} process(es) on port {}", pids.len(), port);
     print!("Kill these processes? (y/N): ");
 
     std::io::Write::flush(&mut std::io::stdout()).ok();

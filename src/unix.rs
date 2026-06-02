@@ -1,7 +1,7 @@
 use std::io::ErrorKind;
 use std::process::Command;
 
-use crate::helper::{process_and_display, ProcessEntry, RED, YELLOW, RESET};
+use crate::helper::{ProcessEntry, RED, RESET, YELLOW, process_and_display};
 
 pub fn handle(port: u16) {
     let lsof_output = Command::new("lsof")

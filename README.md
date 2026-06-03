@@ -73,6 +73,12 @@ irm https://github.com/yofabr/pkll/releases/latest/download/install.ps1 | iex
 cargo install pkll
 ```
 
+### AUR
+
+```sh
+yay -S pkll-bin # or paru -S pkll-bin
+```
+
 ### Manual
 
 Download the binary for your platform from the [latest release](https://github.com/yofabr/pkll/releases/latest):
